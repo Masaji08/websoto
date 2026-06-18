@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+
+actor "Kasir" as kasir
+actor "Pemilik" as pemilik
+actor "Koki" as koki
+
+rectangle "Sistem Kasir Digital" {
+  usecase (Login) as UC1
+  usecase (Kelola Menu) as UC2
+  usecase (Catat Pesanan) as UC3
+  usecase (Proses Pembayaran) as UC4
+  usecase (Cetak Struk) as UC5
+  usecase (Lihat Laporan) as UC6
+  usecase (Lihat Pesanan Masuk) as UC7
+  usecase (Update Status Pesanan) as UC8
+}
+
+kasir --> UC1
+kasir --> UC2
+kasir --> UC3
+kasir --> UC4
+kasir --> UC5
+kasir ---> UC6
+
+pemilik --> UC1
+pemilik --> UC6
+
+koki --> UC1
+koki --> UC7
+koki --> UC8
+
+UC3 ..> UC4 : <<include>>
+UC4 ..> UC5 : <<include>>
+@enduml

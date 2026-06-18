@@ -1,0 +1,71 @@
+@startuml
+abstract class User {
+  - id_user: int
+  - username: string
+  - password: string
+  - nama: string
+  - role: string
+}
+
+class Kasir {
+  + catatPesanan()
+  + prosesPembayaran()
+  + kelolaMenu()
+}
+
+class Pemilik {
+  + lihatLaporan()
+}
+
+class Koki {
+  + lihatPesanan()
+  + updateStatus()
+}
+
+class Kategori {
+  - id_kategori: int
+  - nama_kategori: string
+}
+
+class Menu {
+  - id_menu: int
+  - nama_menu: string
+  - harga: int
+  - kategori_id: int
+}
+
+class Pesanan {
+  - id_pesanan: int
+  - no_pesanan: string
+  - tanggal: date
+  - total: int
+  - status: string
+  - kasir_id: int
+}
+
+class DetailPesanan {
+  - id_detail: int
+  - pesanan_id: int
+  - menu_id: int
+  - jumlah: int
+  - subtotal: int
+}
+
+class Pembayaran {
+  - id_bayar: int
+  - pesanan_id: int
+  - jumlah_bayar: int
+  - metode_bayar: string
+  - tanggal: date
+}
+
+User <|-- Kasir
+User <|-- Pemilik
+User <|-- Koki
+
+Kategori "1" -- "many" Menu
+Menu "1" -- "many" DetailPesanan
+Pesanan "1" -- "many" DetailPesanan
+Pesanan "1" -- "1" Pembayaran
+User "1" -- "many" Pesanan
+@enduml

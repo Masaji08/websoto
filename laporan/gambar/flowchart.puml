@@ -1,0 +1,15 @@
+@startuml
+start
+: Pelanggan datang dan melihat menu;
+: Kasir memasukkan pesanan ke sistem;
+: Sistem menghitung total biaya otomatis;
+: Kasir mengkonfirmasi pesanan ke pelanggan;
+: Pelanggan melakukan pembayaran;
+: Kasir memproses pembayaran;
+: Sistem menyimpan transaksi dan mencetak struk;
+: Sistem mengirim notifikasi pesanan ke dapur;
+: Koki melihat pesanan dan menyiapkan;
+: Pelayan menyajikan pesanan ke pelanggan;
+: Sistem menyimpan data untuk laporan;
+stop
+@enduml

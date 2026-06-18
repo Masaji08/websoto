@@ -1,0 +1,21 @@
+@startuml
+actor "Kasir" as kasir
+participant "Sistem" as sistem
+database "Database" as db
+
+kasir -> sistem: Buka halaman pesanan baru
+sistem -> sistem: Tampilkan daftar menu
+kasir -> sistem: Pilih menu dan jumlah
+sistem -> sistem: Hitung subtotal
+kasir -> sistem: Konfirmasi pesanan
+sistem -> db: Simpan data pesanan
+db --> sistem: Pesanan tersimpan
+sistem --> kasir: Tampilkan total pembayaran
+kasir -> sistem: Masukkan jumlah bayar
+sistem -> sistem: Hitung kembalian
+kasir -> sistem: Konfirmasi pembayaran
+sistem -> db: Simpan data pembayaran
+db --> sistem: Pembayaran tersimpan
+sistem --> kasir: Tampilkan struk
+sistem -> sistem: Kirim notifikasi ke dapur
+@enduml

@@ -1,0 +1,111 @@
+\documentclass[12pt,a4paper,oneside]{book}
+
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{indentfirst}
+\usepackage{caption}
+\renewcommand{\figurename}{Gambar}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{changepage}
+
+\newcounter{none}
+\newcommand{\pandocbounded}[1]{#1}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Perancangan Sistem Kasir Digital Berbasis Web}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot{}
+
+\renewcommand{\chaptername}{BAB}
+\renewcommand{\thechapter}{\Roman{chapter}}
+\renewcommand{\thesection}{\arabic{chapter}.\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{chapter}.\arabic{section}.\arabic{subsection}}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\centering\fontsize{14}{18}\selectfont}
+  {\chaptername\ \thechapter}{10pt}{\fontsize{14}{18}\selectfont}
+\titlespacing*{\chapter}{0pt}{10pt}{20pt}
+
+\renewcommand{\cftchappresnum}{BAB }
+\renewcommand{\cftchapnumwidth}{5em}
+\renewcommand{\cftdotsep}{2}
+
+\titleformat{\section}
+  {\normalfont\bfseries\normalsize}{\thesection}{0.5em}{}
+  
+\titleformat{\subsection}
+  {\normalfont\bfseries\normalsize}{\thesubsection}{0.5em}{}
+
+\onehalfspacing
+\setlength{\parindent}{1.5cm}
+
+\renewcommand{\contentsname}{DAFTAR ISI}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\setlength{\cftbeforechapskip}{5pt}
+\makeatletter
+\renewcommand{\@cftmaketoctitle}{%
+  \@cftpagestyle
+  \@afterheading}
+\makeatother
+
+\renewcommand{\arraystretch}{1.5}
+\setlength{\tabcolsep}{8pt}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{\small Perancangan Sistem Kasir Digital Berbasis Web}
+  \fancyhead[R]{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\begin{document}
+
+\frontmatter
+\pagenumbering{roman}
+
+$for(include-before)$
+$include-before$
+$endfor$
+
+\vspace*{10pt}
+\begin{center}
+\bfseries\fontsize{14}{18}\selectfont DAFTAR ISI
+\end{center}
+\vspace{10pt}
+\tableofcontents
+\cleardoublepage
+
+\mainmatter
+\pagenumbering{arabic}
+
+$body$
+
+\end{document}

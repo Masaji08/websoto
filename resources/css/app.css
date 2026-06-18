@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] { display: none !important; }
+
+@layer utilities {
+    .animation-delay-100 {
+        animation-delay: 100ms;
+    }
+    .animation-delay-200 {
+        animation-delay: 200ms;
+    }
+    .animation-delay-300 {
+        animation-delay: 300ms;
+    }
+    .animation-delay-400 {
+        animation-delay: 400ms;
+    }
+}
+
+/* Smooth scroll for main content */
+main {
+    scroll-behavior: smooth;
+}
+
+/* Order card entry animation */
+.order-card-new {
+    animation: cardPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cardPopIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Pulsing border for new pending orders */
+@keyframes pulseBorder {
+    0%, 100% {
+        border-color: rgba(255, 140, 66, 0.2);
+        box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.1);
+    }
+    50% {
+        border-color: rgba(255, 140, 66, 0.5);
+        box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.05);
+    }
+}
+
+.animate-pulse-border {
+    animation: pulseBorder 2s ease-in-out infinite;
+}
+
+/* Smooth scrollbar for columns */
+#orders-grid .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+#orders-grid .overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#orders-grid .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 99px;
+}
+
+#orders-grid .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db;
+}
+
+/* Column drop zone hover */
+#orders-grid .overflow-y-auto {
+    transition: background-color 0.2s ease;
+}
+
+/* Glass morphism effect for columns */
+.backdrop-blur-sm {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Card hover effects */
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* Sidebar active indicator */
+.sidebar-link-active {
+    position: relative;
+}
+.sidebar-link-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: #6D4C41;
+    border-radius: 0 3px 3px 0;
+}
