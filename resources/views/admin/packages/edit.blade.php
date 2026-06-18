@@ -92,7 +92,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Paket</label>
                     <div class="flex items-start gap-4">
                         @if ($package->image_path)
-                            <img src="{{ Storage::url($package->image_path) }}" alt="{{ $package->name }}"
+                            <img src="{{ \App\Services\CloudinaryService::getImageUrl($package->image_path) }}" alt="{{ $package->name }}"
                                 class="w-24 h-24 rounded-lg object-cover border border-gray-200 flex-shrink-0">
                         @endif
                         <div class="flex-1">

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\CloudinaryService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 
 class Package extends Model
 {
@@ -40,6 +40,6 @@ class Package extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        return $this->image_path ? Storage::url($this->image_path) : null;
+        return CloudinaryService::getImageUrl($this->image_path);
     }
 }

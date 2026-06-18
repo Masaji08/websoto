@@ -18,8 +18,8 @@
     @php $sdLogoPath = setting('logo'); @endphp
     {{-- Brand --}}
     <div class="flex items-center gap-3 px-5 py-5 border-b border-[#6D4C41]/30">
-        @if ($sdLogoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($sdLogoPath))
-            <img src="{{ Storage::url($sdLogoPath) }}" alt="Logo" class="w-12 h-12 rounded-xl object-contain bg-white/10">
+        @if ($sdLogoPath && (\App\Services\CloudinaryService::isCloudinaryUrl($sdLogoPath) || \Illuminate\Support\Facades\Storage::disk('public')->exists($sdLogoPath)))
+            <img src="{{ \App\Services\CloudinaryService::getImageUrl($sdLogoPath) }}" alt="Logo" class="w-12 h-12 rounded-xl object-contain bg-white/10">
         @else
         <svg class="w-8 h-8 text-[#6D4C41]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>

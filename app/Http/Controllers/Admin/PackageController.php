@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\MenuItem;
 use App\Models\Package;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
@@ -64,7 +64,7 @@ class PackageController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = $request->file('image')->store('packages', 'public');
+            $data['image_path'] = app(CloudinaryService::class)->upload($request->file('image'), 'websoto/packages');
         }
 
         $package = Package::create($data);
@@ -115,10 +115,11 @@ class PackageController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            if ($package->image_path) {
-                Storage::disk('public')->delete($package->image_path);
+            $cloudinary = app(CloudinaryService::class);
+            if ($package->image_path && CloudinaryService::isCloudinaryUrl($package->image_path)) {
+                $cloudinary->delete($package->image_path);
             }
-            $data['image_path'] = $request->file('image')->store('packages', 'public');
+            $data['image_path'] = $cloudinary->upload($request->file('image'), 'websoto/packages');
         }
 
         DB::transaction(function () use ($package, $data, $validated) {
@@ -135,8 +136,8 @@ class PackageController extends Controller
 
     public function destroy(Package $package)
     {
-        if ($package->image_path) {
-            Storage::disk('public')->delete($package->image_path);
+        if ($package->image_path && CloudinaryService::isCloudinaryUrl($package->image_path)) {
+            app(CloudinaryService::class)->delete($package->image_path);
         }
         $deleted = $package->delete();
         if (!$deleted) {

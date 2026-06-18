@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
@@ -39,14 +39,15 @@ class SettingsController extends Controller
         }
 
         if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('settings', 'public');
+            $cloudinary = app(CloudinaryService::class);
+            $url = $cloudinary->upload($request->file('logo'), 'websoto/settings');
 
             $old = Setting::where('key', 'logo')->value('value');
-            if ($old && Storage::disk('public')->exists($old)) {
-                Storage::disk('public')->delete($old);
+            if ($old && CloudinaryService::isCloudinaryUrl($old)) {
+                $cloudinary->delete($old);
             }
 
-            Setting::updateOrCreate(['key' => 'logo'], ['value' => $path]);
+            Setting::updateOrCreate(['key' => 'logo'], ['value' => $url]);
             settingRefresh('logo');
         }
 
@@ -56,8 +57,8 @@ class SettingsController extends Controller
     public function removeLogo()
     {
         $old = Setting::where('key', 'logo')->value('value');
-        if ($old && Storage::disk('public')->exists($old)) {
-            Storage::disk('public')->delete($old);
+        if ($old && CloudinaryService::isCloudinaryUrl($old)) {
+            app(CloudinaryService::class)->delete($old);
         }
 
         Setting::where('key', 'logo')->update(['value' => null]);

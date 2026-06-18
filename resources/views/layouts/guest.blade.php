@@ -22,9 +22,9 @@
             {{-- Brand --}}
             @php $logoPath = setting('logo'); @endphp
             <div class="text-center mb-8">
-                @if ($logoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($logoPath))
+                @if ($logoPath && (\App\Services\CloudinaryService::isCloudinaryUrl($logoPath) || \Illuminate\Support\Facades\Storage::disk('public')->exists($logoPath)))
                     <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white dark:bg-gray-800 shadow-lg mb-3 overflow-hidden p-1">
-                        <img src="{{ Storage::url($logoPath) }}" alt="{{ setting('nama_warung') }}" class="w-full h-full object-contain">
+                        <img src="{{ \App\Services\CloudinaryService::getImageUrl($logoPath) }}" alt="{{ setting('nama_warung') }}" class="w-full h-full object-contain">
                     </div>
                 @else
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF8C42] to-[#6D4C41] shadow-lg mb-3">

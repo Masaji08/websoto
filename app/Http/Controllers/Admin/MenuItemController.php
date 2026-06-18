@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MenuItem;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class MenuItemController extends Controller
 {
@@ -20,7 +20,7 @@ class MenuItemController extends Controller
             'description' => $i->description,
             'price' => $i->price,
             'price_formatted' => number_format($i->price, 0, ',', '.'),
-            'image_url' => $i->image_path ? Storage::url($i->image_path) : null,
+            'image_url' => CloudinaryService::getImageUrl($i->image_path),
             'category_id' => $i->category_id,
             'category_name' => $i->category->name,
             'is_available' => $i->is_available,
@@ -48,7 +48,7 @@ class MenuItemController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image_path'] = $request->file('image')->store('menu', 'public');
+            $validated['image_path'] = app(CloudinaryService::class)->upload($request->file('image'), 'websoto/menu');
         }
 
         unset($validated['image']);
@@ -83,10 +83,11 @@ class MenuItemController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($menuItem->image_path) {
-                Storage::disk('public')->delete($menuItem->image_path);
+            $cloudinary = app(CloudinaryService::class);
+            if ($menuItem->image_path && CloudinaryService::isCloudinaryUrl($menuItem->image_path)) {
+                $cloudinary->delete($menuItem->image_path);
             }
-            $validated['image_path'] = $request->file('image')->store('menu', 'public');
+            $validated['image_path'] = $cloudinary->upload($request->file('image'), 'websoto/menu');
         }
 
         unset($validated['image']);
@@ -98,8 +99,8 @@ class MenuItemController extends Controller
 
     public function destroy(MenuItem $menuItem)
     {
-        if ($menuItem->image_path) {
-            Storage::disk('public')->delete($menuItem->image_path);
+        if ($menuItem->image_path && CloudinaryService::isCloudinaryUrl($menuItem->image_path)) {
+            app(CloudinaryService::class)->delete($menuItem->image_path);
         }
         $deleted = $menuItem->delete();
         if (!$deleted) {

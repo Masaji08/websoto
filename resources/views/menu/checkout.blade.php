@@ -48,8 +48,8 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7-7l-7 7 7 7"/></svg>
         </a>
         <h1 style="font-size:18px; font-weight:700; margin:0; flex:1;">Checkout</h1>
-        @if ($chkLogoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($chkLogoPath))
-        <img src="{{ Storage::url($chkLogoPath) }}" alt="Logo" style="width:34px;height:34px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,0.2);">
+        @if ($chkLogoPath && (\App\Services\CloudinaryService::isCloudinaryUrl($chkLogoPath) || \Illuminate\Support\Facades\Storage::disk('public')->exists($chkLogoPath)))
+        <img src="{{ \App\Services\CloudinaryService::getImageUrl($chkLogoPath) }}" alt="Logo" style="width:34px;height:34px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,0.2);">
         @endif
     </div>
 

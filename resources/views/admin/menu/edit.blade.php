@@ -27,7 +27,7 @@
                                 <img :src="preview" class="w-full h-full object-cover">
                             </template>
                             <template x-if="!preview">
-                                <img src="{{ $menuItem->image_path ? Storage::url($menuItem->image_path) : 'https://placehold.co/300x200/FFFBF5/7A2E0E?text=Menu' }}" class="w-full h-full object-cover">
+                                <img src="{{ \App\Services\CloudinaryService::getImageUrl($menuItem->image_path) ?? 'https://placehold.co/300x200/FFFBF5/7A2E0E?text=Menu' }}" class="w-full h-full object-cover">
                             </template>
                         </div>
                         <div class="flex-1">

@@ -59,8 +59,8 @@
                     </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                    @if ($mLogoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($mLogoPath))
-                    <img src="{{ Storage::url($mLogoPath) }}" alt="Logo" style="width:38px;height:38px;border-radius:10px;object-fit:contain;background:rgba(255,255,255,0.2);">
+                    @if ($mLogoPath && (\App\Services\CloudinaryService::isCloudinaryUrl($mLogoPath) || \Illuminate\Support\Facades\Storage::disk('public')->exists($mLogoPath)))
+                    <img src="{{ \App\Services\CloudinaryService::getImageUrl($mLogoPath) }}" alt="Logo" style="width:38px;height:38px;border-radius:10px;object-fit:contain;background:rgba(255,255,255,0.2);">
                     @endif
                     <button @click="showCart = true" x-show="totalCount > 0"
                         style="position:relative;width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,0.15);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
@@ -103,7 +103,7 @@
                 <div style="background:#FFF3E0;border:2px solid #6D4C41;border-radius:14px;overflow:hidden;position:relative;">
                     @if ($pkg->image_path)
                     <div style="height:100px;overflow:hidden;">
-                        <img src="{{ Storage::url($pkg->image_path) }}" alt="{{ $pkg->name }}" style="width:100%;height:100%;object-fit:cover;">
+                        <img src="{{ \App\Services\CloudinaryService::getImageUrl($pkg->image_path) }}" alt="{{ $pkg->name }}" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     @endif
                     <div style="position:absolute;top:8px;right:10px;background:#6D4C41;color:#FF8C42;font-size:9px;font-weight:800;padding:3px 8px;border-radius:0 0 6px 6px;z-index:2;">HEMAT Rp {{ number_format($pkg->savings, 0, ',', '.') }}</div>
@@ -156,7 +156,7 @@
                                 @endif
 
                                 @if($item->image_path)
-                                    <img src="{{ Storage::url($item->image_path) }}" alt="{{ $item->name }}" class="menu-img" loading="lazy">
+                                    <img src="{{ \App\Services\CloudinaryService::getImageUrl($item->image_path) }}" alt="{{ $item->name }}" class="menu-img" loading="lazy">
                                 @else
                                     @php
                                         $colors = ['#FFF3E0','#FED7AA','#FECACA','#FEF08A','#BFDBFE','#BBF7D0','#C4B5FD','#F9A8D4','#FDBA74','#D9F99D'];
