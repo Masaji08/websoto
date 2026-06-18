@@ -22,8 +22,13 @@ class CloudinaryService
 
     public function upload(UploadedFile $file, string $folder = 'websoto'): string
     {
+        return $this->uploadFromPath($file->getRealPath(), $folder);
+    }
+
+    public function uploadFromPath(string $filePath, string $folder = 'websoto'): string
+    {
         $uploaded = $this->cloudinary->uploadApi()->upload(
-            $file->getRealPath(),
+            $filePath,
             ['folder' => $folder]
         );
 
