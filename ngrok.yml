@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 3F7Bx18I61WwGnDgN4Mmuc7Q7fU_24SEzPacQX6X8s9s7b1Mq
+tunnels:
+  web:
+    proto: http
+    addr: 8000
+  ws:
+    proto: http
+    addr: 8080
