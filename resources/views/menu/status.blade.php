@@ -208,6 +208,11 @@ document.addEventListener('alpine:init', () => {
                             window.location.reload();
                         }
                     });
+
+                window.Echo.channel('order.' + this.orderNumber)
+                    .listen('OrderStatusUpdated', (e) => {
+                        window.location.reload();
+                    });
             }
 
             // 2) Fallback: polling cerdas (2s, 5s, 10s) — query Midtrans API langsung

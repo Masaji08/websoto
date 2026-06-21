@@ -4,6 +4,7 @@ namespace App\Events;
 
 use App\Models\Order;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -23,7 +24,7 @@ class OrderStatusUpdated implements ShouldBroadcastNow
     {
         return [
             new PrivateChannel('kasir-orders'),
-            new PrivateChannel('order-' . $this->order->order_number),
+            new Channel('order.' . $this->order->order_number),
         ];
     }
 
