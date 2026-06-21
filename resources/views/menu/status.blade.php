@@ -192,31 +192,52 @@
 </div>
 
 <script>
+const ORDER_NUMBER = '{{ $order->order_number }}';
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (window.Echo) {
+            console.log('[Echo] Subscribing to order.' + ORDER_NUMBER);
+
+            window.Echo.channel('order.' + ORDER_NUMBER)
+                .listen('OrderStatusUpdated', (e) => {
+                    console.log('[Echo] OrderStatusUpdated:', e);
+                    window.location.reload();
+                });
+
+            window.Echo.channel('order-' + ORDER_NUMBER)
+                .listen('.payment.updated', (e) => {
+                    console.log('[Echo] PaymentStatusUpdated:', e);
+                    if (e.status === 'paid') {
+                        window.location.reload();
+                    }
+                });
+        } else {
+            console.warn('[Echo] Not ready, retrying in 1s');
+            setTimeout(() => {
+                if (window.Echo) {
+                    window.Echo.channel('order.' + ORDER_NUMBER)
+                        .listen('OrderStatusUpdated', () => window.location.reload());
+
+                    window.Echo.channel('order-' + ORDER_NUMBER)
+                        .listen('.payment.updated', (e) => {
+                            if (e.status === 'paid') window.location.reload();
+                        });
+                }
+            }, 1000);
+        }
+    }, 500);
+});
+
 document.addEventListener('alpine:init', () => {
     Alpine.data('paymentWatcher', () => ({
-        orderNumber: '{{ $order->order_number }}',
+        orderNumber: ORDER_NUMBER,
         isUnpaidQris: {{ $order->payment_method === 'qris' && $order->payment_status === 'unpaid' ? 'true' : 'false' }},
 
         init() {
             if (!this.isUnpaidQris) return;
 
-            // 1) WebSocket auto-detect (kalau Pusher hidup)
-            if (window.Echo) {
-                window.Echo.channel('order-' + this.orderNumber)
-                    .listen('.payment.updated', (e) => {
-                        if (e.status === 'paid') {
-                            window.location.reload();
-                        }
-                    });
-
-                window.Echo.channel('order.' + this.orderNumber)
-                    .listen('OrderStatusUpdated', (e) => {
-                        window.location.reload();
-                    });
-            }
-
-            // 2) Fallback: polling cerdas (2s, 5s, 10s) — query Midtrans API langsung
-            //    Handle skenario di mana Midtrans callback gak nyampe server
+            // Fallback: polling cerdas (2s, 5s, 10s) — query Midtrans API langsung
             const checkPayment = (delay) => {
                 setTimeout(() => {
                     fetch('{{ route('menu.order.check-payment', [$table->slug, $order->order_number]) }}', {
