@@ -434,15 +434,10 @@
                 },
 
                 updateCounts() {
-                    document.querySelectorAll('[id^="orders-"]').forEach(col => {
-                        const count = col.querySelectorAll('[data-order-id]').length;
-                        const countId = col.id.replace('orders-', 'count-');
-                        const el = document.getElementById(countId);
-                        if (el) {
-                            el.textContent = count;
-                            el.style.transition = 'all 0.3s ease';
-                            el.style.transform = 'scale(1.3)';
-                            setTimeout(() => { el.style.transform = 'scale(1)'; }, 200);
+                    ['pending', 'processing', 'ready', 'completed'].forEach(status => {
+                        const col = document.getElementById('orders-' + status);
+                        if (col) {
+                            this.counts[status] = col.querySelectorAll('[data-order-id]').length;
                         }
                     });
                 },
