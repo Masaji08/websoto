@@ -323,7 +323,7 @@
                         el.style.opacity = '0';
                         setTimeout(() => {
                             el.remove();
-                            if (!['completed', 'cancelled'].includes(order.status)) {
+                            if (order.status !== 'cancelled') {
                                 this.addOrderCard(order, order.status);
                             }
                         }, 250);
