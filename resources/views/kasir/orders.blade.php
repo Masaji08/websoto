@@ -169,8 +169,8 @@
                     this.startTimers();
                     this.requestNotifyPermission();
 
-                    if (typeof Echo !== 'undefined') {
-                        Echo.private('kasir-orders')
+                    if (typeof window.Echo !== 'undefined') {
+                        window.Echo.private('kasir-orders')
                             .listen('NewOrderReceived', (e) => {
                                 this.addOrderCard(e.order, 'pending');
                                 this.playNotification();
