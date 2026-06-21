@@ -168,7 +168,10 @@
                     this.updateCounts();
                     this.startTimers();
                     this.requestNotifyPermission();
+                    this.initEcho();
+                },
 
+                initEcho(retries = 3) {
                     if (typeof window.Echo !== 'undefined') {
                         window.Echo.private('kasir-orders')
                             .listen('NewOrderReceived', (e) => {
@@ -198,6 +201,8 @@
                                     `#${e.order.order_number} → ${label}`
                                 );
                             });
+                    } else if (retries > 0) {
+                        setTimeout(() => { this.initEcho(retries - 1); }, 1000);
                     }
                 },
 
