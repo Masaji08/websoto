@@ -11,19 +11,19 @@ class PaymentStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets;
 
-    public string $orderId;
+    public string $orderNumber;
     public string $status;
 
-    public function __construct(string|int $orderId, string $status)
+    public function __construct(string $orderNumber, string $status)
     {
-        $this->orderId = (string) $orderId;
+        $this->orderNumber = $orderNumber;
         $this->status = $status;
     }
 
     public function broadcastOn(): array
     {
         return [
-            new Channel('order.' . $this->orderId),
+            new Channel('order-' . $this->orderNumber),
         ];
     }
 

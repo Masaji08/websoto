@@ -195,7 +195,7 @@ class OrderController extends Controller
             ]);
             broadcast(new \App\Events\NewOrderReceived($order));
             broadcast(new \App\Events\OrderStatusUpdated($order));
-            broadcast(new PaymentStatusUpdated($order->id, 'paid'));
+            broadcast(new PaymentStatusUpdated($order->order_number, 'paid'));
 
             if ($request->wantsJson()) {
                 return response()->json([

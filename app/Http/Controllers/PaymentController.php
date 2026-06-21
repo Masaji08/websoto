@@ -25,7 +25,7 @@ class PaymentController extends Controller
                         'order_number' => $order->order_number,
                     ]);
                     broadcast(new NewOrderReceived($order));
-                    broadcast(new PaymentStatusUpdated($order->id, 'paid'));
+                    broadcast(new PaymentStatusUpdated($order->order_number, 'paid'));
                 }
 
                 broadcast(new OrderStatusUpdated($order));

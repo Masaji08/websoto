@@ -194,7 +194,7 @@
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('paymentWatcher', () => ({
-        orderId: {{ $order->id }},
+        orderNumber: '{{ $order->order_number }}',
         isUnpaidQris: {{ $order->payment_method === 'qris' && $order->payment_status === 'unpaid' ? 'true' : 'false' }},
 
         init() {
@@ -202,7 +202,7 @@ document.addEventListener('alpine:init', () => {
 
             // 1) WebSocket auto-detect (kalau Pusher hidup)
             if (window.Echo) {
-                window.Echo.channel('order.' + this.orderId)
+                window.Echo.channel('order-' + this.orderNumber)
                     .listen('.payment.updated', (e) => {
                         if (e.status === 'paid') {
                             window.location.reload();
