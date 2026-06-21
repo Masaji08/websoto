@@ -5,6 +5,5 @@ nixPkgs = ["nodejs_22", "php83", "php83Packages.composer"]
 cmds = [
   "composer install --no-dev --optimize-autoloader",
   "npm install",
-  "npm run build",
-  "php artisan storage:link"
+  "npm run build"
 ]
