@@ -12,13 +12,13 @@ class KasirOrderController extends Controller
     public function index()
     {
         $orders = Order::with(['table', 'items.menuItem'])
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereDate('created_at', today())
             ->where(function ($q) {
                 $q->where('payment_method', '!=', 'qris')
                   ->orWhere('payment_status', 'paid');
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(50);
+            ->get();
 
         return view('kasir.orders', compact('orders'));
     }

@@ -169,6 +169,31 @@
                     this.startTimers();
                     this.requestNotifyPermission();
                     this.initEcho();
+                    this.initMidnightClear();
+                },
+
+                initMidnightClear() {
+                    const clearCompleted = () => {
+                        const col = document.getElementById('orders-completed');
+                        if (col) {
+                            col.querySelectorAll('[data-order-id]').forEach(el => el.remove());
+                            this.updateCounts();
+                        }
+                    };
+
+                    const msToMidnight = new Date();
+                    msToMidnight.setHours(24, 0, 0, 0);
+                    const delay = msToMidnight - Date.now();
+
+                    setTimeout(() => {
+                        clearCompleted();
+                        setInterval(() => {
+                            const now = new Date();
+                            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                                clearCompleted();
+                            }
+                        }, 60000);
+                    }, delay);
                 },
 
                 initEcho(retries = 3) {
