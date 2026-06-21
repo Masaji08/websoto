@@ -81,13 +81,11 @@ class TableController extends Controller
 
     public function downloadQr(Table $table)
     {
-        $path = public_path($table->qr_code_path);
+        $svg = $this->qrCodeService->generateSvg($table);
 
-        if (!file_exists($path)) {
-            $this->qrCodeService->generate($table);
-            $path = public_path($table->qr_code_path);
-        }
-
-        return response()->download($path, 'qr-' . $table->slug . '.svg');
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml',
+            'Content-Disposition' => 'attachment; filename="qr-' . $table->slug . '.svg"',
+        ]);
     }
 }
