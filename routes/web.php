@@ -46,6 +46,7 @@ Route::middleware(['auth', 'role:cashier,admin'])->prefix('kasir')->name('kasir.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('tables', TableController::class);
     Route::get('tables/{table}/qr', [TableController::class, 'downloadQr'])->name('tables.qr');
+    Route::get('tables/{table}/qr-preview', [TableController::class, 'previewQr'])->name('tables.qr-preview');
     Route::get('reports', [ReportController::class, 'index'])->name('reports');
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');

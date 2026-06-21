@@ -23,15 +23,9 @@
                         </span>
                     </div>
 
-                    @if ($table->qr_code_path)
-                        <div class="mb-3 bg-gray-50 rounded-lg p-2 flex justify-center">
-                            @if (file_exists(public_path($table->qr_code_path)))
-                                <img src="{{ asset($table->qr_code_path) }}" alt="QR {{ $table->name }}" class="w-32 h-32 object-contain">
-                            @else
-                                <p class="text-xs text-gray-400">QR tidak tersedia</p>
-                            @endif
-                        </div>
-                    @endif
+                    <div class="mb-3 bg-gray-50 rounded-lg p-2 flex justify-center">
+                        <img src="{{ route('admin.tables.qr-preview', $table) }}" alt="QR {{ $table->name }}" class="w-32 h-32 object-contain">
+                    </div>
 
                     <div class="flex gap-2">
                         <a href="{{ route('admin.tables.edit', $table) }}" class="flex-1 text-center px-3 py-1.5 min-h-[44px] inline-flex items-center justify-center border border-gray-200 rounded-lg text-xs hover:bg-gray-50">Edit</a>

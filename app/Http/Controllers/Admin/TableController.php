@@ -88,4 +88,13 @@ class TableController extends Controller
             'Content-Disposition' => 'attachment; filename="qr-' . $table->slug . '.svg"',
         ]);
     }
+
+    public function previewQr(Table $table)
+    {
+        $svg = $this->qrCodeService->generateSvg($table);
+
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml',
+        ]);
+    }
 }
