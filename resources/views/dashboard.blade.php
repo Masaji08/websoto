@@ -197,10 +197,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.Echo === 'undefined') return;
 
     window.Echo.private('kasir-orders')
-        .listen('.NewOrderReceived', function (e) {
+        .listen('NewOrderReceived', function (e) {
             handleTableStatusUpdate(e.order.table_id, true);
         })
-        .listen('.OrderStatusUpdated', function (e) {
+        .listen('OrderStatusUpdated', function (e) {
             const doneStatuses = ['completed', 'cancelled'];
             const isDone = doneStatuses.includes(e.order.status);
             handleTableStatusUpdate(e.order.table_id, !isDone);
