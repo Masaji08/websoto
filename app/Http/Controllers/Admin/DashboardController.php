@@ -24,8 +24,13 @@ class DashboardController extends Controller
         // Total orders today
         $orderTodayCount = Order::whereBetween('created_at', $today)->count();
 
-        // Active orders (not completed/cancelled)
-        $activeOrders = Order::whereNotIn('status', ['completed', 'cancelled'])->count();
+        // Active orders (status aktif DAN sudah dibayar ATAU dibuat < 30 menit)
+        $activeOrders = Order::whereNotIn('status', ['completed', 'cancelled'])
+            ->where(function ($q) {
+                $q->where('payment_status', 'paid')
+                  ->orWhere('created_at', '>=', now()->subMinutes(30));
+            })
+            ->count();
 
         // Available menu count
         $availableMenu = MenuItem::where('is_available', true)->count();
