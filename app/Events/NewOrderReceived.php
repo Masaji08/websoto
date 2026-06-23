@@ -35,6 +35,7 @@ class NewOrderReceived implements ShouldBroadcastNow
         return [
             'order' => [
                 'id' => $this->order->id,
+                'table_id' => $this->order->table_id,
                 'order_number' => $this->order->order_number,
                 'table_name' => $this->order->table->name,
                 'status' => $this->order->status,

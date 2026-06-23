@@ -169,7 +169,10 @@
                                 $dotClass = match($statusCode) { 0 => 'bg-gray-400', 1 => 'bg-emerald-500', 2 => 'bg-orange-500' };
                                 $label = match($statusCode) { 0 => 'Tidak Aktif', 1 => 'Kosong', 2 => 'Ada Pesanan' };
                             @endphp
-                            <div class="rounded-lg border-2 p-2.5 text-center transition-all {{ $bgClass }}" title="{{ $t->name }}: {{ $label }}">
+                            <div class="rounded-lg border-2 p-2.5 text-center transition-all {{ $bgClass }}"
+                                 title="{{ $t->name }}: {{ $label }}"
+                                 data-table-id="{{ $t->id }}"
+                                 data-table-active="{{ $t->is_active ? 'true' : 'false' }}">
                                 <div class="flex justify-center mb-1">
                                     <span class="w-2.5 h-2.5 rounded-full {{ $dotClass }}"></span>
                                 </div>
@@ -187,4 +190,52 @@
             </div>
         </div>
     </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.Echo === 'undefined') return;
+
+    window.Echo.private('kasir-orders')
+        .listen('.NewOrderReceived', function (e) {
+            handleTableStatusUpdate(e.order.table_id, true);
+        })
+        .listen('.OrderStatusUpdated', function (e) {
+            const doneStatuses = ['completed', 'cancelled'];
+            const isDone = doneStatuses.includes(e.order.status);
+            handleTableStatusUpdate(e.order.table_id, !isDone);
+        });
+
+    function handleTableStatusUpdate(tableId, hasOrder) {
+        const card = document.querySelector(`[data-table-id="${tableId}"]`);
+        if (!card) return;
+
+        const isActive = card.dataset.tableActive === 'true';
+        if (!isActive) return;
+
+        const dot = card.querySelector('span.rounded-full');
+        const label = card.querySelector('p.text-\\[10px\\]');
+
+        card.classList.remove(
+            'bg-gray-100', 'bg-emerald-50', 'border-emerald-200',
+            'bg-orange-50', 'border-orange-200'
+        );
+        if (dot) dot.classList.remove('bg-gray-400', 'bg-emerald-500', 'bg-orange-500');
+
+        if (hasOrder) {
+            card.classList.add('bg-orange-50', 'border-orange-200');
+            if (dot) dot.classList.add('bg-orange-500');
+            if (label) label.textContent = 'Ada Pesanan';
+        } else {
+            card.classList.add('bg-emerald-50', 'border-emerald-200');
+            if (dot) dot.classList.add('bg-emerald-500');
+            if (label) label.textContent = 'Kosong';
+        }
+
+        const name = card.querySelector('p.font-semibold')?.textContent ?? '';
+        card.setAttribute('title', `${name}: ${hasOrder ? 'Ada Pesanan' : 'Kosong'}`);
+    }
+});
+</script>
+@endpush
 </x-layouts.admin>
