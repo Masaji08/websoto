@@ -58,9 +58,14 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Table status
+        // Table status: meja dianggap occupied hanya jika ada order
+        // dengan status aktif DAN (sudah dibayar ATAU dibuat < 30 menit)
         $tables = Table::orderBy('name')->get();
         $activeOrderTableIds = Order::whereNotIn('status', ['completed', 'cancelled'])
+            ->where(function ($q) {
+                $q->where('payment_status', 'paid')
+                  ->orWhere('created_at', '>=', now()->subMinutes(30));
+            })
             ->select('table_id')
             ->distinct()
             ->pluck('table_id')
