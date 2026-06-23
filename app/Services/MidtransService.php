@@ -99,11 +99,14 @@ class MidtransService
             $updateData['status'] = 'confirmed';
         } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
             $updateData['payment_status'] = 'failed';
+            $updateData['status'] = 'cancelled';
         } elseif ($transactionStatus === 'pending') {
             $updateData['payment_status'] = 'unpaid';
         }
 
         $order->update($updateData);
+
+        broadcast(new \App\Events\OrderStatusUpdated($order));
 
         return $order;
     }
@@ -146,6 +149,7 @@ class MidtransService
                 $updateData['status'] = 'confirmed';
             } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
                 $updateData['payment_status'] = 'failed';
+                $updateData['status'] = 'cancelled';
             } elseif ($transactionStatus === 'pending') {
                 $updateData['payment_status'] = 'unpaid';
             }
@@ -153,6 +157,10 @@ class MidtransService
             if (!empty($updateData)) {
                 $order->update($updateData);
                 $order->refresh();
+
+                if (in_array($transactionStatus, ['deny', 'expire', 'cancel', 'settlement', 'capture'])) {
+                    broadcast(new \App\Events\OrderStatusUpdated($order));
+                }
             }
         } catch (\Exception $e) {
             \Log::warning('Midtrans status check error: ' . $e->getMessage());

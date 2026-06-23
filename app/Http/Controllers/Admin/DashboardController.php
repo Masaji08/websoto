@@ -60,7 +60,7 @@ class DashboardController extends Controller
 
         // Table status
         $tables = Table::orderBy('name')->get();
-        $activeOrderTableIds = Order::whereIn('status', ['pending', 'confirmed', 'processing', 'ready'])
+        $activeOrderTableIds = Order::whereNotIn('status', ['completed', 'cancelled'])
             ->select('table_id')
             ->distinct()
             ->pluck('table_id')
