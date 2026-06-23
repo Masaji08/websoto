@@ -40,7 +40,10 @@ class OrderStatusUpdated implements ShouldBroadcastNow
                 'payment_status' => $this->order->payment_status,
                 'payment_method' => $this->order->payment_method,
                 'items_count' => $this->order->items->sum('quantity'),
+                'total_amount' => $this->order->total_amount,
                 'total_amount_formatted' => 'Rp ' . number_format($this->order->total_amount, 0, ',', '.'),
+                'created_at' => $this->order->created_at->toISOString(),
+                'created_at_diff' => $this->order->created_at->diffForHumans(),
             ],
         ];
     }

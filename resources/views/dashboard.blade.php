@@ -52,7 +52,7 @@
                                 <th class="text-right px-5 py-3 font-medium">Waktu</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-50">
+                        <tbody class="divide-y divide-gray-50" id="recent-orders-tbody">
                             @forelse ($recentOrders as $order)
                                 @php
                                     $statusColors = ['pending' => 'yellow', 'confirmed' => 'blue', 'processing' => 'blue', 'ready' => 'green', 'completed' => 'emerald', 'cancelled' => 'red'];
@@ -68,7 +68,7 @@
                                         default => 'bg-gray-50 text-gray-700',
                                     };
                                 @endphp
-                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                <tr class="hover:bg-gray-50/50 transition-colors" data-order-id="{{ $order->id }}">
                                     <td class="px-5 py-3 font-semibold text-gray-900">#{{ $order->order_number }}</td>
                                     <td class="px-5 py-3 text-gray-600">{{ $order->table?->name ?? '-' }}</td>
                                     <td class="px-5 py-3 text-gray-600">{{ $order->items->count() }} item</td>
@@ -83,7 +83,7 @@
                                     <td class="px-5 py-3 text-right text-gray-400 text-xs">{{ $order->created_at->diffForHumans() }}</td>
                                 </tr>
                             @empty
-                                <tr>
+                                <tr class="empty-row">
                                     <td colspan="7" class="px-5 py-8 text-center text-gray-400 text-sm">Belum ada pesanan hari ini.</td>
                                 </tr>
                             @endforelse
@@ -191,19 +191,33 @@
         </div>
     </div>
 
+@php
+    $statusColors = ['pending' => 'yellow', 'confirmed' => 'blue', 'processing' => 'blue', 'ready' => 'green', 'completed' => 'emerald', 'cancelled' => 'red'];
+    $statusLabels = ['pending' => 'Menunggu', 'confirmed' => 'Dikonfirmasi', 'processing' => 'Diproses', 'ready' => 'Siap', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'];
+    $badgeMap = ['emerald' => 'bg-emerald-50 text-emerald-700', 'blue' => 'bg-blue-50 text-blue-700', 'yellow' => 'bg-yellow-50 text-yellow-700', 'green' => 'bg-green-50 text-green-700', 'red' => 'bg-red-50 text-red-700'];
+    $dotMap = ['pending' => 'bg-yellow-500', 'cancelled' => 'bg-red-500'];
+@endphp
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.Echo === 'undefined') return;
 
+    const statusColors = @json($statusColors);
+    const statusLabels = @json($statusLabels);
+    const badgeMap = @json($badgeMap);
+    const dotMap = @json($dotMap);
+    const paymentLabels = @json($paymentLabels);
+
     window.Echo.private('kasir-orders')
         .listen('NewOrderReceived', function (e) {
             handleTableStatusUpdate(e.order.table_id, true);
+            prependOrderRow(e.order);
         })
         .listen('OrderStatusUpdated', function (e) {
             const doneStatuses = ['completed', 'cancelled'];
             const isDone = doneStatuses.includes(e.order.status);
             handleTableStatusUpdate(e.order.table_id, !isDone);
+            updateOrderRow(e.order);
         });
 
     function handleTableStatusUpdate(tableId, hasOrder) {
@@ -234,6 +248,87 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const name = card.querySelector('p.font-semibold')?.textContent ?? '';
         card.setAttribute('title', `${name}: ${hasOrder ? 'Ada Pesanan' : 'Kosong'}`);
+    }
+
+    function prependOrderRow(order) {
+        const tbody = document.querySelector('#recent-orders-tbody');
+        if (!tbody) return;
+
+        const existing = tbody.querySelector(`[data-order-id="${order.id}"]`);
+        if (existing) return;
+
+        const emptyRow = tbody.querySelector('.empty-row');
+        if (emptyRow) emptyRow.remove();
+
+        const row = buildOrderRow(order);
+        tbody.insertAdjacentHTML('afterbegin', row);
+
+        const firstRow = tbody.querySelector(`[data-order-id="${order.id}"]`);
+        if (firstRow) {
+            firstRow.style.opacity = '0';
+            requestAnimationFrame(function () {
+                firstRow.style.transition = 'opacity 0.4s ease';
+                firstRow.style.opacity = '1';
+            });
+        }
+    }
+
+    function updateOrderRow(order) {
+        const row = document.querySelector(`#recent-orders-tbody [data-order-id="${order.id}"]`);
+        if (!row) {
+            prependOrderRow(order);
+            return;
+        }
+
+        const sc = statusColors[order.status] || 'gray';
+        const badgeClass = badgeMap[sc] || 'bg-gray-50 text-gray-700';
+        const dotClass = dotMap[order.status] || 'bg-green-500';
+        const label = statusLabels[order.status] || order.status;
+
+        const badgeSpan = row.querySelector('.order-status-badge');
+        if (badgeSpan) {
+            badgeSpan.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ' + badgeClass;
+            badgeSpan.innerHTML = '<span class="w-1.5 h-1.5 rounded-full ' + dotClass + '"></span> ' + label;
+        }
+
+        const payCell = row.querySelector('.order-payment');
+        if (payCell && order.payment_method) {
+            payCell.textContent = paymentLabels[order.payment_method] || order.payment_method;
+        }
+
+        const priceCell = row.querySelector('.order-total');
+        if (priceCell && order.total_amount_formatted) {
+            priceCell.textContent = order.total_amount_formatted;
+        }
+    }
+
+    function buildOrderRow(order) {
+        const sc = statusColors[order.status] || 'gray';
+        const badgeClass = badgeMap[sc] || 'bg-gray-50 text-gray-700';
+        const dotClass = dotMap[order.status] || 'bg-green-500';
+        const label = statusLabels[order.status] || order.status;
+        const payLabel = paymentLabels[order.payment_method] || order.payment_method || '-';
+        const total = order.total_amount_formatted || 'Rp ' + (order.total_amount || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        const time = order.created_at_diff || 'baru saja';
+        const itemsText = (order.items_count || 1) + ' item';
+        const tableName = order.table_name || '-';
+
+        return '<tr class="hover:bg-gray-50/50 transition-colors" data-order-id="' + order.id + '">'
+            + '<td class="px-5 py-3 font-semibold text-gray-900">#' + escapeHtml(order.order_number) + '</td>'
+            + '<td class="px-5 py-3 text-gray-600">' + escapeHtml(tableName) + '</td>'
+            + '<td class="px-5 py-3 text-gray-600">' + itemsText + '</td>'
+            + '<td class="px-5 py-3 font-medium text-gray-900 order-total">' + total + '</td>'
+            + '<td class="px-5 py-3 text-gray-600 order-payment">' + payLabel + '</td>'
+            + '<td class="px-5 py-3"><span class="order-status-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ' + badgeClass + '"><span class="w-1.5 h-1.5 rounded-full ' + dotClass + '"></span> ' + label + '</span></td>'
+            + '<td class="px-5 py-3 text-right text-gray-400 text-xs">' + time + '</td>'
+            + '</tr>';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     }
 });
 </script>
