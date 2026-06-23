@@ -1,3 +1,2 @@
 web: php artisan serve --host=0.0.0.0 --port=$PORT
-worker: php artisan queue:work --sleep=3 --tries=3
-scheduler: php artisan schedule:work
+worker: php artisan queue:work --sleep=3 --tries=3 & php artisan schedule:work & wait
